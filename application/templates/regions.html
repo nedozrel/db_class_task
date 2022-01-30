@@ -1,0 +1,52 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+<div class="page-header">
+    <h1>Регионы</h1>
+</div>
+
+<div>
+    <ul class="list-group">
+        {% for region in regions %}
+            <li  class="list-group-item">
+                <div class="row align-items-center">
+                    <div class="col-6">
+                        <span>{{ region.Country.name }}, {{region.Region.name}}</span>
+                    </div>
+                    <div class="col">
+                        <div class="float-end">
+                            <form action="/delete_region/{{ region.Region.id }}" method="POST">
+                                {{ delete_region_form.csrf_token }}
+                                {{ delete_region_form.submit(class_="btn btn-danger btn-sm") }}
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}
+
+{% block footer %}
+<div>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                  <strong>Упсс.</strong> {{ message }}
+                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    <form action="/regions" method="POST" class="form-inline">
+        {{ add_region_form.csrf_token }}
+        <div class="input-group md-3">
+            {{ add_region_form.country_id(class_="form-control region-input") }}
+            {{ add_region_form.region_name(class_="form-control region-input", placeholder="Название региона") }}
+        </div>
+        {{ add_region_form.submit(class_="form-control") }}
+    </form>
+</div>
+{% endblock %}

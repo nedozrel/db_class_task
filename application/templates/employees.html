@@ -1,0 +1,69 @@
+{% extends 'layout.html' %}
+{% block body %}
+<h1>Работники</h1>
+
+{% endblock %}
+<div class="employees-main-container">
+    <ul class="list-group">
+        {% for employee in employees %}
+            <li  class="list-group-item">
+                <div class="row align-items-center">
+                    <div class="col-6">
+                        <span>{{ employee.name }}</span>
+                    </div>
+                    <div class="col">
+                        <div class="float-end">
+                            <form action="/delete_employee/{{ employee.id }}" method="POST">
+
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </li>
+        {% endfor %}
+    </ul>
+</div>
+{% block footer %}
+<div>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                  <strong>Упсс.</strong> {{ message }}
+                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    <form action="/employees" method="post" class="form-inline">
+        {{ form.csrf_token }}
+        <div class="input-group md-3">
+            {{ form.surname(class_="form-control", placeholder="Фамилия")}}
+            {{ form.name(class_="form-control", placeholder="Имя")}}
+            {{ form.patronymic(class_="form-control", placeholder="Отчество")}}
+            <span class="input-group-text" id="basic-addon3">Дата рождения:</span>
+            {{ form.birth_date(class_="form-control", placeholder="Дата рождения")}}
+            {{ form.gender(class_="form-control")}}
+        </div>
+        <div class="input-group md-3">
+            <span class="input-group-text">Место рождения</span>
+            {{ form.birth_place().country_name(class_="form-control", placeholder="Страна") }}
+            {{ form.birth_place().region_name(class_="form-control", placeholder="Регион") }}
+            {{ form.birth_place().city(class_="form-control", placeholder="Город") }}
+            {{ form.birth_place().street(class_="form-control", placeholder="Улица") }}
+            {{ form.birth_place().house_number(class_="form-control", placeholder="Номер дома") }}
+            {{ form.birth_place().apartments_number(class_="form-control", placeholder="Номер квартиры") }}
+        </div>
+        <div class="input-group md-3">
+            <span class="input-group-text">Адрес ПМЖ</span>
+            {{ form.birth_place().country_name(class_="form-control", placeholder="Страна") }}
+            {{ form.birth_place().region_name(class_="form-control", placeholder="Регион") }}
+            {{ form.birth_place().city(class_="form-control", placeholder="Город") }}
+            {{ form.birth_place().street(class_="form-control", placeholder="Улица") }}
+            {{ form.birth_place().house_number(class_="form-control", placeholder="Номер дома") }}
+            {{ form.birth_place().apartments_number(class_="form-control", placeholder="Номер квартиры") }}
+        </div>
+        {{ form.submit(class_="form-control") }}
+    </form>
+</div>
+{% endblock %}

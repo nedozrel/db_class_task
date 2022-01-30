@@ -1,0 +1,48 @@
+{% extends 'layout.html' %}
+{% block body %}
+<h1>Страны</h1>
+
+<div class="counties-main-container">
+    <ul class="list-group">
+        {% for country in countries %}
+            <li  class="list-group-item">
+                <div class="row align-items-center">
+                    <div class="col-6">
+                        <span>{{ country.name }}</span>
+                    </div>
+                    <div class="col">
+                        <div class="float-end">
+                            <form action="/delete_country/{{ country.id }}" method="POST">
+                                {{ delete_country_form.csrf_token }}
+                                {{ delete_country_form.submit(class_="btn btn-danger btn-sm") }}
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}
+
+{% block footer %}
+<div>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                  <strong>Упсс.</strong> {{ message }}
+                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    <form action="/countries" method="POST" class="form-inline">
+        <div class="form-group">
+            {{ add_country_form.csrf_token }}
+            {{ add_country_form.country_name(class_="form-control country-input", placeholder="Название страны") }}
+            {{ add_country_form.submit(class_="form-control") }}
+        </div>
+    </form>
+</div>
+{% endblock %}
