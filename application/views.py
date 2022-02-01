@@ -4,6 +4,21 @@ from application.forms import AddCountryForm, AddRegionForm, AddEmployeeForm, De
 from application.models import Country, Region, Employee
 
 
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+
+@app.route('/employees', methods=['GET', 'POST'])
+def employees_page():
+    form = AddEmployeeForm(request.form)
+    if form.validate_on_submit():
+        return redirect('/employees')
+    else:
+        employees_list = Employee.query.order_by(Employee.id.desc()).all()
+        return render_template('employees.html', form=form, employees=employees_list)
+
+
 @app.route('/countries', methods=['GET', 'POST'])
 def countries_page():
     add_country_form = AddCountryForm(request.form)
@@ -34,42 +49,43 @@ def delete_country(country_id):
     return redirect('/countries')
 
 
-@app.route('/employees', methods=['GET', 'POST'])
-def employees_page():
-    form = AddEmployeeForm(request.form)
-    print(form.data)
-    if form.validate_on_submit():
-        print(1)
-        return redirect('/employees')
-    else:
-        employees_list = Employee.query.order_by(Employee.id.desc()).all()
-        return render_template('employees.html', form=form, employees=employees_list)
-
-
 @app.route('/regions', methods=['GET', 'POST'])
 def regions_page():
     add_region_form = AddRegionForm(request.form)
-    add_region_form.country_id.choices = [(country.id, country.name) for country in Country.query.order_by('name').all()]
+    add_region_form.country_id.choices = [
+        (country.id, country.name) for country in Country.query.order_by('name').all()
+    ]
     delete_region_form = DeleteForm(request.form)
     if add_region_form.validate_on_submit():
         region = Region.query.filter(
-            Region.name == add_region_form.data['region_name'] and Region.country_id == add_region_form.data['country_id']
+            Region.country_id == add_region_form.data['country_id']
+        ).filter(
+            Region.name == add_region_form.data['region_name']
         ).all()
         if region:
             flash('Данный регион уже есть в базе, регион должен быть уникален.')
         else:
-            db.session.add(Region(name=add_region_form.data['region_name'], country_id=add_region_form.data['country_id']))
+            db.session.add(Region(
+                name=add_region_form.data['region_name'],
+                country_id=add_region_form.data['country_id']
+            ))
             db.session.commit()
         return redirect('/regions')
     else:
         regions_list = db.session.query(Region, Country)\
             .join(Country, Country.id == Region.country_id).order_by(Region.name).all()
-        print(regions_list[0].Region.id, regions_list[0].Country.name, regions_list[0].Region.name)
+
+        regions_dict = {region.Country.name: [] for region in regions_list}
+
+        for region in regions_list:
+            regions_dict[region.Country.name].append(region.Region)
+
         return render_template(
             'regions.html',
             add_region_form=add_region_form,
             delete_region_form=delete_region_form,
-            regions=regions_list
+            regions=regions_list,
+            regions_dict=regions_dict
         )
 
 
@@ -84,8 +100,3 @@ def delete_region(region_id):
 @app.route('/addresses')
 def addresses_page():
     return render_template('/addresses.html')
-
-
-@app.route('/')
-def index():
-    return render_template('index.html')

@@ -15,7 +15,8 @@ class Region(db.Model):
     __tablename__ = 'regions'
     id = db.Column(db.Integer, primary_key=True)
     country_id = db.Column(db.Integer, db.ForeignKey('countries.id'), nullable=False)
-    name = db.Column(db.String(100), unique=True, nullable=False)
+    name = db.Column(db.String(100), nullable=False)
+    __table_args__ = (db.UniqueConstraint('country_id', 'name', name='_country_region_uc'),)
 
     def __repr__(self):
         return '<Region %r>' % self.name

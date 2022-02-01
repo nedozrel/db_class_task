@@ -6,25 +6,38 @@
 </div>
 
 <div>
-    <ul class="list-group">
-        {% for region in regions %}
-            <li  class="list-group-item">
-                <div class="row align-items-center">
-                    <div class="col-6">
-                        <span>{{ region.Country.name }}, {{region.Region.name}}</span>
-                    </div>
-                    <div class="col">
-                        <div class="float-end">
-                            <form action="/delete_region/{{ region.Region.id }}" method="POST">
-                                {{ delete_region_form.csrf_token }}
-                                {{ delete_region_form.submit(class_="btn btn-danger btn-sm") }}
-                            </form>
+    <div class="accordion accordion-flush">
+        {% for country in regions_dict.keys() %}
+        <div class="accordion-item">
+            <h2 class="accordion-header">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#{{ country }}" aria-expanded="false" aria-controls="flush-collapseOne">
+                  {{ country }}
+              </button>
+            </h2>
+            <div id="{{ country }}" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample">
+              <div class="accordion-body">
+                  {% for region in regions_dict[country] %}
+                  <li  class="list-group-item">
+                    <div class="row align-items-center">
+                        <div class="col-6">
+                            <span>{{region.name}}</span>
+                        </div>
+                        <div class="col">
+                            <div class="float-end">
+                                <form action="/delete_region/{{ region.id }}" method="POST">
+                                    {{ delete_region_form.csrf_token }}
+                                    {{ delete_region_form.submit(class_="btn btn-danger btn-sm") }}
+                                </form>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </li>
+                  </li>
+                  {% endfor %}
+              </div>
+            </div>
+        </div>
         {% endfor %}
-    </ul>
+    </div>
 </div>
 {% endblock %}
 
